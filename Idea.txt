@@ -1,0 +1,1 @@
+From J. C. 2024-09-09: From Google Chat, open an Excel Spreadsheet (direct upload, not in Google Drive) in Google Sheets.
