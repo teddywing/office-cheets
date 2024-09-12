@@ -1,0 +1,15 @@
+{
+	"manifest_version": 3,
+	"name": "Office Cheats",
+	"version": "0.0.1",
+	"description": "Open Microsoft Office attachments to Google Chat in Google Docs",
+	"content_scripts": [
+		{
+			"matches": ["https://mail.google.com/chat/*"],
+			"js": ["content.js"]
+		}
+	],
+	"background": {
+		"service_worker": "background.js"
+	}
+}
