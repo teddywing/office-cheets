@@ -1,7 +1,7 @@
-function Attachment (file_name, content_type, download_url) {
+function Attachment (file_name, content_type, resource_name) {
 	this.file_name = file_name;
 	this.content_type = content_type;
-	this.download_url = download_url;
+	this.resource_name = resource_name;
 	this.bytes;
 
 	return this;
@@ -23,7 +23,7 @@ function fetch_chat_message (google_chat_name, attachment_index) {
 			return new Attachment(
 				message.attachment[attachment_index].contentName,
 				message.attachment[attachment_index].contentType,
-				message.attachment[attachment_index].downloadUri
+				message.attachment[attachment_index].attachmentDataRef.resourceName
 			);
 		});
 }
@@ -35,7 +35,9 @@ function fetch_attachment (attachment) {
 		attachment
 	);
 
-	return fetch_authenticated(attachment.download_url)
+	return fetch_authenticated(
+		`https://chat.googleapis.com/v1/media/${attachment.resource_name}?alt=media`
+	)
 		.then(function(response) { return response.arrayBuffer(); })
 		.then(function(bytes) {
 			attachment.bytes = bytes;
