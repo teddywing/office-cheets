@@ -35,7 +35,7 @@ function fetch_attachment (attachment) {
 		attachment
 	);
 
-	return fetch(attachment.download_url)
+	return fetch_authenticated(attachment.download_url)
 		.then(function(response) { return response.arrayBuffer(); })
 		.then(function(bytes) {
 			attachment.bytes = bytes;
