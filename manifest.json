@@ -3,6 +3,11 @@
 	"name": "Office Cheets",
 	"version": "0.0.1",
 	"description": "Open Microsoft Office attachments to Google Chat in Google Docs",
+
+	"permissions": [
+		"identity"
+	],
+
 	"content_scripts": [
 		{
 			"matches": ["https://mail.google.com/chat/*"],
@@ -11,5 +16,13 @@
 	],
 	"background": {
 		"service_worker": "background.js"
+	},
+
+	"oauth2": {
+		"client_id": "<YOUR-OAUTH2-CLIENT-ID>.apps.googleusercontent.com",
+		"scopes": [
+			"https://www.googleapis.com/auth/chat.messages.readonly",
+			"https://www.googleapis.com/auth/drive.file"
+		]
 	}
 }
