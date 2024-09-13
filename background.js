@@ -46,19 +46,36 @@ function fetch_attachment (attachment) {
 		});
 }
 
-// function upload_to_drive (file_name, content_type, bytes) {
 function upload_to_drive (attachment) {
-	return fetch(
-		'https://www.googleapis.com/upload/drive/v3/files?uploadType=media',
+	var boundary = '-------314159265358979323846';
+	var delimiter = '\r\n--' + boundary + '\r\n';
+	var close_delimiter = '\r\n--' + boundary + '--';
+
+	var metadata = {
+		'name': attachment.file_name,
+		'mimeType': attachment.content_type
+	};
+
+	const multipart_request_body =
+		delimiter +
+		'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
+		JSON.stringify(metadata) +
+		delimiter +
+		'Content-Type: ' + attachment.content_type + '\r\n\r\n' +
+		attachment.bytes +
+		close_delimiter;
+
+
+	return fetch_authenticated(
+		'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',
 		{
 			method: 'POST',
 			headers: new Headers({
-				'Content-Type': content_type
+				'Content-Type': 'multipart/related; boundary="' + boundary + '"'
 			}),
-			body: attachment.bytes
+			body: multipart_request_body
 		}
 	);
-
 }
 
 function fetch_authenticated (resource, options) {
@@ -91,6 +108,5 @@ function save_attachment_to_drive_and_open (google_chat_name) {
 
 	return fetch_chat_message(google_chat_name, attachment_index)
 		.then(fetch_attachment)
-		;
-		// .then(upload_to_drive);
+		.then(upload_to_drive);
 }
