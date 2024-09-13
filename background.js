@@ -75,7 +75,14 @@ function upload_to_drive (attachment) {
 			}),
 			body: multipart_request_body
 		}
-	);
+	)
+		.then(function(response) { return response.json(); });
+}
+
+function open_file_in_google_docs (drive_upload_response) {
+	chrome.tabs.create({
+		url: `https://docs.google.com/spreadsheets/d/${drive_upload_response.id}/edit`
+	});
 }
 
 function fetch_authenticated (resource, options) {
@@ -108,5 +115,6 @@ function save_attachment_to_drive_and_open (google_chat_name) {
 
 	return fetch_chat_message(google_chat_name, attachment_index)
 		.then(fetch_attachment)
-		.then(upload_to_drive);
+		.then(upload_to_drive)
+		.then(open_file_in_google_docs);
 }
