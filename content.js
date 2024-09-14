@@ -10,7 +10,7 @@ function is_button_injected (attachment_container) {
 	return attachment_container.hasAttribute('office-cheets-open-button-injected');
 }
 
-function inject_attachment_button (attachment_image) {
+function inject_attachment_button (attachment_image, space_id, message_id) {
 	// TODO: Check for multiple file uploads in one message.
 	// var attachment_image = message_el.querySelector(
 	// 	'img[src^="https://chat.google.com/u/0/api/get_attachment_url"]'
@@ -25,6 +25,8 @@ function inject_attachment_button (attachment_image) {
 		return;
 	}
 
+	var parent_message_el = attachment_container.closest('[data-topic-id]');
+
 	var open_in_docs_button = document.createElement('div');
 	open_in_docs_button.style.position = 'absolute';
 	open_in_docs_button.style.bottom = 0;
@@ -37,10 +39,9 @@ function inject_attachment_button (attachment_image) {
 
 			chrome.runtime.sendMessage(
 				{
-					'message': 'open_attachment',
-					// TODO: fix
-					// 'space_id': space_id,
-					// 'message_id': message_el.dataset.topicId,
+					message: 'open_attachment',
+					space_id: space_id,
+					message_id: parent_message_el.dataset.topicId,
 				}
 			);
 		}
@@ -86,7 +87,10 @@ function initialize_attachment_buttons () {
 				attachment_index < attachment_images.length;
 				attachment_index++
 			) {
-				inject_attachment_button(attachment_images[attachment_index]);
+				inject_attachment_button(
+					attachment_images[attachment_index],
+					space_id
+				);
 			}
 
 			// for (var j = 0; j < mutation.addedNodes.length; j++) {
