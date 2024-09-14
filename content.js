@@ -79,6 +79,7 @@ function initialize_attachment_buttons () {
 			var mutation = mutation_list[i];
 
 			var attachment_images = mutation.target.querySelectorAll(
+				// TODO: This :not doesn't do anything. The flag is on the container.
 				'img[src^="https://chat.google.com/u/0/api/get_attachment_url"]:not([office-cheets-open-button-injected])'
 			)
 
