@@ -39,8 +39,8 @@ function fetch_attachment (attachment) {
 		`https://chat.googleapis.com/v1/media/${attachment.resource_name}?alt=media`
 	)
 		.then(function(response) { return response.arrayBuffer(); })
-		.then(function(bytes) {
-			attachment.bytes = bytes;
+		.then(function(buffer) {
+			attachment.bytes = new Uint8Array(buffer);
 			console.log('fetch_attachment', attachment);
 			return attachment;
 		});
@@ -56,15 +56,16 @@ function upload_to_drive (attachment) {
 		'mimeType': attachment.content_type
 	};
 
+	var content_base64 = btoa(String.fromCharCode.apply(null, attachment.bytes));
 	const multipart_request_body =
 		delimiter +
 		'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
 		JSON.stringify(metadata) +
 		delimiter +
-		'Content-Type: ' + attachment.content_type + '\r\n\r\n' +
-		attachment.bytes +
+		'Content-Type: ' + attachment.content_type + '\r\n' +
+		'Content-Transfer-Encoding: base64\r\n\r\n' +
+		content_base64 +
 		close_delimiter;
-
 
 	return fetch_authenticated(
 		'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',
