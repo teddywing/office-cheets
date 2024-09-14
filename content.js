@@ -5,7 +5,9 @@ function is_chat_frame () {
 function initialize_attachment_buttons () {
 	console.info('initialize_attachment_buttons', 'Frame href', window.location.href);
 
-	var chat_container = document.querySelector('[data-group-id]');
+	var chat_container = document.querySelector(
+		'c-wiz[data-group-id][data-num-unread-words] > div[jsname]:has(+ div[role="navigation"]) > div > div[jsname]:has(c-wiz[data-topic-id]'
+	);
 	if (!chat_container) {
 		setTimeout(
 			initialize_attachment_buttons,
@@ -17,8 +19,36 @@ function initialize_attachment_buttons () {
 
 	console.info('initialize_attachment_buttons', 'Chat container', chat_container);
 
-	var space_name = chat_container.dataset.groupId;
+	var chat_parent = document.querySelector('[data-group-id][data-num-unread-words]');
+	var space_name = chat_parent.dataset.groupId;
 	var space_id = space_name.substring(space_name.indexOf('/') + 1);
+
+	// TODO: Mutation observer.
+	var messages_observer = new MutationObserver(function(mutation_list) {
+		for (var i = 0; i < mutation_list.length; i++) {
+			var mutation = mutation_list[i];
+
+			for (var j = 0; j < mutation.addedNodes.length; j++) {
+				var node = mutation.addedNodes[j];
+
+				console.log('###', node);
+				if (!node.hasAttribute('data-topic-id')) {
+					continue;
+				}
+
+				var message_group = mutation.target;
+				debugger;
+			}
+		}
+	});
+
+	messages_observer.observe(
+		chat_container,
+		{
+			childList: true
+			// subtree: true
+		}
+	);
 
 	var messages = chat_container.querySelectorAll('[data-topic-id]');
 	if (!messages.length) {
