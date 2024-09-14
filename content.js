@@ -8,7 +8,7 @@ function initialize_attachment_buttons () {
 	var chat_container = document.querySelector('[data-group-id]');
 	if (!chat_container) {
 		setTimeout(
-			function() { initialize_attachment_buttons(); },
+			initialize_attachment_buttons,
 			1000
 		);
 
