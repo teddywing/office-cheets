@@ -80,9 +80,11 @@ function upload_to_drive (attachment) {
 		.then(function(response) { return response.json(); });
 }
 
-function open_file_in_google_docs (drive_upload_response) {
+function open_file_in_google_docs (drive_upload_response, opener_tab) {
 	chrome.tabs.create({
-		url: `https://docs.google.com/spreadsheets/d/${drive_upload_response.id}/edit`
+		url: `https://docs.google.com/spreadsheets/d/${drive_upload_response.id}/edit`,
+		openerTabId: opener_tab.id,
+		index: opener_tab.index + 1
 	});
 }
 
@@ -110,23 +112,25 @@ function fetch_authenticated (resource, options) {
 		});
 }
 
-function save_attachment_to_drive_and_open (google_chat_name) {
+function save_attachment_to_drive_and_open (google_chat_name, tab) {
 	// TODO: Handle chat messages with multiple attachments.
 	var attachment_index = 0;
 
 	return fetch_chat_message(google_chat_name, attachment_index)
 		.then(fetch_attachment)
 		.then(upload_to_drive)
-		.then(open_file_in_google_docs);
+		.then(function(drive_upload_response) {
+			open_file_in_google_docs(drive_upload_response, tab);
+		});
 }
 
-function open_attachment (message) {
+function open_attachment (message, tab) {
 	var google_chat_name = google_chat_name_from_message_id(
 		message.space_id,
 		message.message_id
 	);
 
-	return save_attachment_to_drive_and_open(google_chat_name);
+	return save_attachment_to_drive_and_open(google_chat_name, tab);
 }
 
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
@@ -134,7 +138,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 
 	switch (message.fn) {
 	case 'open_attachment':
-		open_attachment(message)
+		open_attachment(message, sender.tab)
 			.catch(function(error) {
 				console.error(error);
 
