@@ -107,6 +107,8 @@ function fetch_authenticated (resource, options) {
 				);
 			}
 
+			// TODO: If 401 then chrome.identity.removeCachedAuthToken
+
 			options.headers.set('Authorization', 'Bearer ' + token_result.token);
 			return fetch(resource, options);
 		});
