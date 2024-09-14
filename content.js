@@ -2,17 +2,21 @@ function is_chat_frame () {
 	return window.location.href.includes('hostFrame');
 }
 
-function inject_attachment_button (message_el) {
+function inject_attachment_button (attachment_image) {
 	// TODO: Check for multiple file uploads in one message.
-	var attachment_image = message_el.querySelector(
-		'img[src^="https://chat.google.com/u/0/api/get_attachment_url"]'
-	)
+	// var attachment_image = message_el.querySelector(
+	// 	'img[src^="https://chat.google.com/u/0/api/get_attachment_url"]'
+	// )
+    //
+	// if (!attachment_image) {
+	// 	return;
+	// }
 
-	if (!attachment_image) {
+	var attachment_container = attachment_image.parentNode.parentNode;
+	if (attachment_container.hasAttribute('office-cheets-open-button-injected')) {
 		return;
 	}
 
-	var attachment_container = attachment_image.parentNode.parentNode;
 	var open_in_docs_button = document.createElement('div');
 	open_in_docs_button.style.position = 'absolute';
 	open_in_docs_button.style.bottom = 0;
@@ -21,16 +25,21 @@ function inject_attachment_button (message_el) {
 	open_in_docs_button.addEventListener(
 		'click',
 		function(event) {
+			event.stopPropagation();
+
 			chrome.runtime.sendMessage(
 				{
 					'message': 'open_attachment',
-					'space_id': space_id,
-					'message_id': message_el.dataset.topicId,
+					// TODO: fix
+					// 'space_id': space_id,
+					// 'message_id': message_el.dataset.topicId,
 				}
 			);
 		}
 	);
 
+	attachment_container.appendChild(open_in_docs_button);
+	attachment_container.setAttribute('office-cheets-open-button-injected', '');
 	// var file_name = attachment_image.getAttribute('alt');
 }
 
@@ -60,32 +69,44 @@ function initialize_attachment_buttons () {
 		for (var i = 0; i < mutation_list.length; i++) {
 			var mutation = mutation_list[i];
 
-			for (var j = 0; j < mutation.addedNodes.length; j++) {
-				var node = mutation.addedNodes[j];
+			var attachment_images = mutation.target.querySelectorAll(
+				'img[src^="https://chat.google.com/u/0/api/get_attachment_url"]:not([office-cheets-open-button-injected])'
+			)
 
-				console.log('###', node);
-				if (!node.hasAttribute('data-topic-id')) {
-					continue;
-				}
-
-				var message_group = mutation.target;
-				debugger;
+			for (
+				var attachment_index = 0;
+				attachment_index < attachment_images.length;
+				attachment_index++
+			) {
+				inject_attachment_button(attachment_images[attachment_index]);
 			}
+
+			// for (var j = 0; j < mutation.addedNodes.length; j++) {
+			// 	var node = mutation.addedNodes[j];
+            //
+			// 	console.log('###', node);
+			// 	if (!node.hasAttribute('data-topic-id')) {
+			// 		continue;
+			// 	}
+            //
+			// 	var message_group = mutation.target;
+			// 	debugger;
+			// }
 		}
 	});
 
 	messages_observer.observe(
 		chat_container,
 		{
-			childList: true
-			// subtree: true
+			childList: true,
+			subtree: true
 		}
 	);
 
-	var messages = chat_container.querySelectorAll('[data-topic-id]');
-	for (var i = 0; i < messages.length; i++) {
-		inject_attachment_button(messages[i]);
-	}
+	// var messages = chat_container.querySelectorAll('[data-topic-id]');
+	// for (var i = 0; i < messages.length; i++) {
+	// 	inject_attachment_button(messages[i]);
+	// }
 }
 
 function init () {
