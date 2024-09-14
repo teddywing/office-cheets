@@ -11,7 +11,13 @@ function space_idtype () {
 	return `${space_type}/${space_id}`;
 }
 
+function is_chat_frame () {
+	return window.location.href.includes('hostFrame');
+}
+
 function initialize_attachment_buttons () {
+	console.info('initialize_attachment_buttons', 'Frame href', window.location.href);
+
 	var space_id = get_space_id();
 	var space_name = space_idtype();
 	var chat_container = document.querySelector(`[data-group-id="${space_name}"]`);
@@ -55,6 +61,10 @@ function initialize_attachment_buttons () {
 }
 
 function init () {
+	if (!is_chat_frame()) {
+		return;
+	}
+
 	initialize_attachment_buttons();
 }
 
