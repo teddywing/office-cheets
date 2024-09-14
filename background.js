@@ -119,3 +119,7 @@ function save_attachment_to_drive_and_open (google_chat_name) {
 		.then(upload_to_drive)
 		.then(open_file_in_google_docs);
 }
+
+chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+	console.info('onMessage', message, sender);
+});
