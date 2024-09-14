@@ -1,16 +1,3 @@
-function get_space_id () {
-	var url_parts = window.top.location.href.split('/');
-	var space_id = url_parts[url_parts.length - 1];
-	return space_id;
-}
-
-function space_idtype () {
-	var url_parts = window.top.location.href.split('/');
-	var space_type = url_parts[url_parts.length - 2];
-	var space_id = url_parts[url_parts.length - 1];
-	return `${space_type}/${space_id}`;
-}
-
 function is_chat_frame () {
 	return window.location.href.includes('hostFrame');
 }
@@ -18,9 +5,11 @@ function is_chat_frame () {
 function initialize_attachment_buttons () {
 	console.info('initialize_attachment_buttons', 'Frame href', window.location.href);
 
-	var space_id = get_space_id();
-	var space_name = space_idtype();
-	var chat_container = document.querySelector(`[data-group-id="${space_name}"]`);
+	var chat_container = document.querySelector('[data-group-id]');
+	console.info('initialize_attachment_buttons', 'Chat container', chat_container);
+
+	var space_name = chat_container.dataset.groupId;
+	var space_id = space_name.substring(space_name.indexOf('/'));
 
 	var messages = chat_container.querySelectorAll('[data-topic-id]');
 	if (!messages.length) {
