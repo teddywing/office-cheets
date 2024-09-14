@@ -18,7 +18,7 @@ function initialize_attachment_buttons () {
 	console.info('initialize_attachment_buttons', 'Chat container', chat_container);
 
 	var space_name = chat_container.dataset.groupId;
-	var space_id = space_name.substring(space_name.indexOf('/'));
+	var space_id = space_name.substring(space_name.indexOf('/') + 1);
 
 	var messages = chat_container.querySelectorAll('[data-topic-id]');
 	if (!messages.length) {
