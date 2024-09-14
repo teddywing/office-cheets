@@ -39,7 +39,7 @@ function inject_attachment_button (attachment_image, space_id, message_id) {
 
 			chrome.runtime.sendMessage(
 				{
-					message: 'open_attachment',
+					fn: 'open_attachment',
 					space_id: space_id,
 					message_id: parent_message_el.dataset.topicId,
 				}

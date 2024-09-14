@@ -120,6 +120,31 @@ function save_attachment_to_drive_and_open (google_chat_name) {
 		.then(open_file_in_google_docs);
 }
 
+function open_attachment (message) {
+	var google_chat_name = google_chat_name_from_message_id(
+		message.space_id,
+		message.message_id
+	);
+
+	return save_attachment_to_drive_and_open(google_chat_name);
+}
+
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 	console.info('onMessage', message, sender);
+
+	switch (message.fn) {
+	case 'open_attachment':
+		open_attachment(message)
+			.catch(function(error) {
+				console.error(error);
+
+				sendResponse({
+					fn: 'open_attachment',
+					error: error,
+					space_id: message.space_id,
+					message_id: message.message_id
+				});
+			});
+		break;
+	}
 });
