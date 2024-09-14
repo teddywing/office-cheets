@@ -2,6 +2,14 @@ function is_chat_frame () {
 	return window.location.href.includes('hostFrame');
 }
 
+function mark_button_injected (attachment_container) {
+	attachment_container.setAttribute('office-cheets-open-button-injected', '');
+}
+
+function is_button_injected (attachment_container) {
+	return attachment_container.hasAttribute('office-cheets-open-button-injected');
+}
+
 function inject_attachment_button (attachment_image) {
 	// TODO: Check for multiple file uploads in one message.
 	// var attachment_image = message_el.querySelector(
@@ -13,7 +21,7 @@ function inject_attachment_button (attachment_image) {
 	// }
 
 	var attachment_container = attachment_image.parentNode.parentNode;
-	if (attachment_container.hasAttribute('office-cheets-open-button-injected')) {
+	if (is_button_injected(attachment_container)) {
 		return;
 	}
 
@@ -39,7 +47,7 @@ function inject_attachment_button (attachment_image) {
 	);
 
 	attachment_container.appendChild(open_in_docs_button);
-	attachment_container.setAttribute('office-cheets-open-button-injected', '');
+	mark_button_injected(attachment_container);
 	// var file_name = attachment_image.getAttribute('alt');
 }
 
