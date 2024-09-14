@@ -6,6 +6,15 @@ function initialize_attachment_buttons () {
 	console.info('initialize_attachment_buttons', 'Frame href', window.location.href);
 
 	var chat_container = document.querySelector('[data-group-id]');
+	if (!chat_container) {
+		setTimeout(
+			function() { initialize_attachment_buttons(); },
+			1000
+		);
+
+		return;
+	}
+
 	console.info('initialize_attachment_buttons', 'Chat container', chat_container);
 
 	var space_name = chat_container.dataset.groupId;
