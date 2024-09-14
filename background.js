@@ -116,6 +116,8 @@ function save_attachment_to_drive_and_open (google_chat_name, tab) {
 	// TODO: Handle chat messages with multiple attachments.
 	var attachment_index = 0;
 
+	// TODO: Cache map[google_chat_name][attachment_index][google_drive_id]
+
 	return fetch_chat_message(google_chat_name, attachment_index)
 		.then(fetch_attachment)
 		.then(upload_to_drive)
