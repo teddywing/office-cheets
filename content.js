@@ -95,6 +95,9 @@ function display_open_progress_finished (group_id, message_id) {
 	open_in_docs_button.classList.add('office-cheets-open-button-hide-loader');
 }
 
+// Timeout initialisation after 30 seconds.
+var INITIALIZE_ATTACHMENT_BUTTONS_TIMEOUT_COUNT = 30;
+
 function initialize_attachment_buttons () {
 	console.info('initialize_attachment_buttons', 'Frame href', window.location.href);
 
@@ -102,10 +105,18 @@ function initialize_attachment_buttons () {
 		'c-wiz[data-group-id][data-num-unread-words] > div[jsname]:has(+ div[role="navigation"]) > div > div[jsname]:has(c-wiz[data-topic-id]'
 	);
 	if (!chat_container) {
+		// This should prevent unnecessary work on frames we don't care about,
+		// but weren't able to distinguish as the non-chat frame.
+		if (INITIALIZE_ATTACHMENT_BUTTONS_TIMEOUT_COUNT === 0) {
+			return;
+		}
+
 		setTimeout(
 			initialize_attachment_buttons,
 			1000
 		);
+
+		INITIALIZE_ATTACHMENT_BUTTONS_TIMEOUT_COUNT -= 1;
 
 		return;
 	}
