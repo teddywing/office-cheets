@@ -156,6 +156,7 @@ function on_open_finished (message) {
 
 function on_open_error (message) {
 	display_open_progress_finished(message.group_id, message.message_id);
+	alert(`Error: ${message.error_message} Could not open attachment.`);
 }
 
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {

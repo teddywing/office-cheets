@@ -280,7 +280,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 					sender.tab.id,
 					{
 						fn: 'on_open_error',
-						error: error,
+						error_message: error.message,
 						group_id: message.group_id,
 						message_id: message.message_id
 					},
