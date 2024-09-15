@@ -150,18 +150,6 @@ function initialize_attachment_buttons () {
 			var mutation = mutation_list[i];
 
 			inject_attachment_buttons(mutation.target, group_id, space_id);
-
-			// for (var j = 0; j < mutation.addedNodes.length; j++) {
-			// 	var node = mutation.addedNodes[j];
-            //
-			// 	console.log('###', node);
-			// 	if (!node.hasAttribute('data-topic-id')) {
-			// 		continue;
-			// 	}
-            //
-			// 	var message_group = mutation.target;
-			// 	debugger;
-			// }
 		}
 	});
 
@@ -178,11 +166,6 @@ function initialize_attachment_buttons () {
 	// observer to handle the case where a Space is selected from the UI rather
 	// than on page load.
 	inject_attachment_buttons(chat_container, group_id, space_id);
-
-	// var messages = chat_container.querySelectorAll('[data-topic-id]');
-	// for (var i = 0; i < messages.length; i++) {
-	// 	inject_attachment_button(messages[i]);
-	// }
 }
 
 function init () {
