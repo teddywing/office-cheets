@@ -2,10 +2,6 @@ function is_chat_frame () {
 	return window.location.href.includes('hostFrame');
 }
 
-function is_preview_frame () {
-	return window.location.href.includes('spareFrame');
-}
-
 function mark_button_injected (attachment_container) {
 	attachment_container.setAttribute('office-cheets-open-button-injected', '');
 }
@@ -136,57 +132,13 @@ function initialize_attachment_buttons () {
 	// }
 }
 
-function initialize_preview_button () {
-	var preview_open_container = document.createElement('div');
-	preview_open_container.style.display = 'inline-block';
-
-	var preview_open_button = document.createElement('button');
-	preview_open_button.textContent = 'Open';
-
-	preview_open_container.appendChild(preview_open_button);
-
-	var body_observer = new MutationObserver(function(mutation_list, observer) {
-		for (var i = 0; i < mutation_list.length; i++) {
-			var mutation = mutation_list[i];
-
-			console.log('@@@@', mutation.addedNodes);
-
-			for (var j = 0; j < mutation.addedNodes.length; j++) {
-				var node = mutation.addedNodes[j];
-
-				if (node.getAttribute('role') !== 'dialog') {
-					continue;
-				}
-
-				var action_buttons_container = node.querySelector(
-					'div[role="toolbar"] > div > div:last-child > div:last-child > div:last-child'
-				);
-
-				action_buttons_container.prepend(preview_open_container);
-
-				return;
-			}
-
-			// var preview_toolbar = document.querySelector(
-			// 	'div[role="dialog"] div[role="toolbar"]'
-			// );
-		}
-	});
-
-	body_observer.observe(
-		document.body,
-		{ childList: true }
-	);
-}
-
 function init () {
-	if (is_chat_frame()) {
-		initialize_attachment_buttons();
+	if (!is_chat_frame()) {
+		return;
 	}
 
-	if (is_preview_frame()) {
-		initialize_preview_button();
-	}
+	initialize_attachment_buttons();
+	// TODO: Add open button to preview
 }
 
 function on_open_finished (message) {
