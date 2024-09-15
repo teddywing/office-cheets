@@ -1,3 +1,6 @@
+// Attachment
+// ==========
+
 function Attachment (file_name, content_type, resource_name) {
 	this.file_name = file_name;
 	this.content_type = content_type;
@@ -6,6 +9,10 @@ function Attachment (file_name, content_type, resource_name) {
 
 	return this;
 }
+
+
+// Google Chat
+// ===========
 
 function google_chat_name_from_message_id (space_id, message_id) {
 	return `spaces/${space_id}/messages/${message_id}.${message_id}`;
@@ -46,6 +53,10 @@ function fetch_attachment (attachment) {
 		});
 }
 
+
+// Google Drive
+// ============
+
 function upload_to_drive (attachment) {
 	var boundary = '-------314159265358979323846';
 	var delimiter = '\r\n--' + boundary + '\r\n';
@@ -80,6 +91,10 @@ function upload_to_drive (attachment) {
 		.then(function(response) { return response.json(); });
 }
 
+
+// Google Docs
+// ===========
+
 function open_file_in_google_docs (drive_upload_response, opener_tab) {
 	chrome.tabs.create({
 		url: `https://docs.google.com/spreadsheets/d/${drive_upload_response.id}/edit`,
@@ -87,6 +102,10 @@ function open_file_in_google_docs (drive_upload_response, opener_tab) {
 		index: opener_tab.index + 1
 	});
 }
+
+
+// Network
+// =======
 
 function fetch_authenticated (resource, options) {
 	if (!options) {
@@ -113,6 +132,10 @@ function fetch_authenticated (resource, options) {
 			return fetch(resource, options);
 		});
 }
+
+
+// Actions
+// =======
 
 function save_attachment_to_drive_and_open (google_chat_name, tab) {
 	// TODO: Handle chat messages with multiple attachments.
