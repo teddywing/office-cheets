@@ -11,6 +11,47 @@ function Attachment (file_name, content_type, resource_name) {
 }
 
 
+// Office file map
+// ===============
+
+function file_name_to_type (file_name) {
+	if (file_name.endsWith(".doc")) {
+		return 'd';
+	}
+	else if (file_name.endsWith(".docx")) {
+		return 'd';
+	}
+	else if (file_name.endsWith(".xls")) {
+		return 's';
+	}
+	else if (file_name.endsWith(".xlsx")) {
+		return 's';
+	}
+	else if (file_name.endsWith(".ppt")) {
+		return 'p';
+	}
+	else if (file_name.endsWith(".pptx")) {
+		return 'p';
+	}
+
+	return '';
+}
+
+function file_type_to_docs_path (file_type) {
+	if (file_type === 'd') {
+		return 'document';
+	}
+	else if (file_type === 's') {
+		return 'spreadsheets';
+	}
+	else if (file_type === 'p') {
+		return 'presentation';
+	}
+
+	return '';
+}
+
+
 // Google Chat
 // ===========
 
@@ -95,10 +136,14 @@ function upload_to_drive (attachment) {
 // Google Docs
 // ===========
 
-function open_file_in_google_docs (drive_id, opener_tab) {
+function open_file_in_google_docs (drive_id, file_type, opener_tab) {
+	var docs_type = file_type_to_docs_path(file_type);
+	if (!docs_type) {
+		throw new Error(`No Docs type for file type '${file_type}' (${drive_id}).`)
+	}
+
 	chrome.tabs.create({
-		// TODO: Handle other Office formats.
-		url: `https://docs.google.com/spreadsheets/d/${drive_id}/edit`,
+		url: `https://docs.google.com/${docs_type}/d/${drive_id}/edit`,
 		windowId: opener_tab.windowId,
 		openerTabId: opener_tab.id,
 		index: opener_tab.index + 1
@@ -159,23 +204,26 @@ function cache_get_doc (space_id, message_id) {
 			if (!cache) {
 				console.info('cache_get_doc', 'Cache not initialised');
 
-				return '';
+				return null;
 			}
 
 			for (var i = 0; i < cache.length; i++) {
 				if (cache[i][0] === cache_key) {
 					console.info('cache_get_doc', 'Found Drive ID', cache[i][0], cache[i][1]);
 
-					return cache[i][1];
+					return {
+						id: cache[i][1],
+						office_cheets_file_type: cache[i][2]
+					};
 				}
 			}
 
 			console.info('cache_get_doc', 'Cache value not found for key', cache_key);
-			return '';
+			return null;
 		});
 }
 
-function cache_set_doc (space_id, message_id, file_id) {
+function cache_set_doc (space_id, message_id, file_id, file_type) {
 	return chrome.storage.sync.get('cache')
 		.then(function(items) {
 			var cache = items['cache'];
@@ -189,7 +237,7 @@ function cache_set_doc (space_id, message_id, file_id) {
 			console.info('cache_set_doc', 'Setting cache', cache_key, file_id);
 
 			// New items go at the start of the list.
-			cache.unshift([cache_key, file_id]);
+			cache.unshift([cache_key, file_id, file_type]);
 
 			// We only have a limited amount of storage available. To stay
 			// within the limits, remove the oldest files from the cache list.
@@ -198,12 +246,12 @@ function cache_set_doc (space_id, message_id, file_id) {
 			// Once the limit is reached, old files must be re-downloaded and
 			// recreated in Google Drive.
 			if (cache.length > CACHE_MAX_ITEMS) {
-				var cache_pair = cache.pop();
+				var cache_triple = cache.pop();
 
 				console.info(
 					'cache_set_doc',
 					'Cache at maximum capacity. Removed',
-					cache_pair
+					cache_triple
 				);
 			}
 
@@ -230,19 +278,35 @@ function save_attachment_to_drive_and_open (space_id, message_id, tab) {
 		.then(fetch_attachment)
 		.then(upload_to_drive)
 		.then(function(drive_upload_response) {
-			cache_set_doc(space_id, message_id, drive_upload_response.id);
+			var file_type = file_name_to_type(drive_upload_response.name);
+			if (!file_type) {
+				throw new Error(`File type '${drive_upload_response.name}' not supported.`);
+			}
+
+			cache_set_doc(
+				space_id,
+				message_id,
+				drive_upload_response.id,
+				file_type,
+			);
+
+			drive_upload_response.office_cheets_file_type = file_type;
 
 			return drive_upload_response;
 		})
 		.then(function(drive_upload_response) {
-			return open_file_in_google_docs(drive_upload_response.id, tab);
+			return open_file_in_google_docs(
+				drive_upload_response.id,
+				drive_upload_response.office_cheets_file_type,
+				tab
+			);
 		});
 }
 
 function open_attachment (message, tab) {
 	return cache_get_doc(message.space_id, message.message_id)
-		.then(function(drive_id) {
-			if (!drive_id) {
+		.then(function(file_metadata) {
+			if (!file_metadata) {
 				return save_attachment_to_drive_and_open(
 					message.space_id,
 					message.message_id,
@@ -250,7 +314,11 @@ function open_attachment (message, tab) {
 				);
 			}
 
-			return open_file_in_google_docs(drive_id, tab);
+			return open_file_in_google_docs(
+				file_metadata.id,
+				file_metadata.office_cheets_file_type,
+				tab
+			);
 		});
 }
 
