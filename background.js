@@ -97,6 +97,7 @@ function upload_to_drive (attachment) {
 
 function open_file_in_google_docs (drive_id, opener_tab) {
 	chrome.tabs.create({
+		// TODO: Handle other Office formats.
 		url: `https://docs.google.com/spreadsheets/d/${drive_id}/edit`,
 		windowId: opener_tab.windowId,
 		openerTabId: opener_tab.id,

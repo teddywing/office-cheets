@@ -20,6 +20,8 @@ function inject_attachment_button (attachment_image, group_id, space_id) {
 	// 	return;
 	// }
 
+	// TODO: Don't inject button for non-Office files.
+
 	var attachment_container = attachment_image.parentNode.parentNode;
 	if (is_button_injected(attachment_container)) {
 		return;
@@ -91,7 +93,6 @@ function initialize_attachment_buttons () {
 	var group_id = chat_parent.dataset.groupId;
 	var space_id = group_id.substring(group_id.indexOf('/') + 1);
 
-	// TODO: Mutation observer.
 	var messages_observer = new MutationObserver(function(mutation_list) {
 		for (var i = 0; i < mutation_list.length; i++) {
 			var mutation = mutation_list[i];
