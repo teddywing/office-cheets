@@ -44,6 +44,10 @@ function inject_attachment_button (attachment_image, group_id, space_id) {
 		}
 	);
 
+	var loader = document.createElement('span');
+	loader.setAttribute('class', 'office-cheets-loader');
+	open_in_docs_button.appendChild(loader);
+
 	attachment_container.appendChild(open_in_docs_button);
 	mark_button_injected(attachment_container);
 	// var file_name = attachment_image.getAttribute('alt');
