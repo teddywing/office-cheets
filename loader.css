@@ -1,0 +1,77 @@
+/*
+ * MIT License
+ * 
+ * Copyright (c) 2020 Vineeth.TR
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+.loader {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	max-width: 6rem;
+	margin-top: 3rem;
+	margin-bottom: 3rem;
+}
+.loader::before,
+.loader::after {
+	content: "";
+	position: absolute;
+	border-radius: 50%;
+	animation: pulsOut 1.8s ease-in-out infinite;
+	filter: drop-shadow(0 0 1rem rgba(255, 255, 255, 0.75));
+}
+.loader::before {
+	width: 100%;
+	padding-bottom: 100%;
+	box-shadow: inset 0 0 0 1rem #fff;
+	animation-name: pulsIn;
+}
+.loader::after {
+	width: calc(100% - 2rem);
+	padding-bottom: calc(100% - 2rem);
+	box-shadow: 0 0 0 0 #fff;
+}
+
+@keyframes pulsIn {
+	0% {
+		box-shadow: inset 0 0 0 1rem #fff;
+		opacity: 1;
+	}
+	50%,
+	100% {
+		box-shadow: inset 0 0 0 0 #fff;
+		opacity: 0;
+	}
+}
+
+@keyframes pulsOut {
+	0%,
+	50% {
+		box-shadow: 0 0 0 0 #fff;
+		opacity: 0;
+	}
+	100% {
+		box-shadow: 0 0 0 1rem #fff;
+		opacity: 1;
+	}
+}
