@@ -215,7 +215,12 @@ function cache_set_doc (space_id, message_id, file_id) {
 // =======
 
 function save_attachment_to_drive_and_open (space_id, message_id, tab) {
-	// TODO: Handle chat messages with multiple attachments.
+	// I originally thought that multiple attachments could be added in a
+	// single message (the API's `attachment` field is an array), but it seems
+	// that is incorrect. If an attachment is already present in the chat input
+	// field in the Google Chat UI, uploading another attachment will prompt
+	// you to replace the existing one. Going to leave the attachment index set
+	// to 0 accordingly.
 	var attachment_index = 0;
 
 	var google_chat_name = google_chat_name_from_message_id(space_id, message_id);
