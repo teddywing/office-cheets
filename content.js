@@ -153,12 +153,19 @@ function on_open_finished (message) {
 	display_open_progress_finished(message.group_id, message.message_id);
 }
 
+function on_open_error (message) {
+	display_open_progress_finished(message.group_id, message.message_id);
+}
+
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 	console.info('Office Cheets', 'onMessage', message, sender);
 
 	switch (message.fn) {
 	case 'on_open_finished':
 		on_open_finished(message);
+		break;
+	case 'on_open_error':
+		on_open_error(message);
 		break;
 	}
 });
