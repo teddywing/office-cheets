@@ -143,15 +143,32 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 	switch (message.fn) {
 	case 'open_attachment':
 		open_attachment(message, sender.tab)
-			.catch(function(error) {
-				console.error(error);
+			.then(function() {
+				console.info('onMessage', 'Sending on_open_finished');
 
-				sendResponse({
-					fn: 'open_attachment',
-					error: error,
-					space_id: message.space_id,
-					message_id: message.message_id
-				});
+				chrome.tabs.sendMessage(
+					sender.tab.id,
+					{
+						fn: 'on_open_finished',
+						group_id: message.group_id,
+						message_id: message.message_id
+					},
+					{ frameId: sender.frameId }
+				);
+			})
+			.catch(function(error) {
+				console.error('onMessage', 'open_attachment', error);
+
+				chrome.tabs.sendMessage(
+					sender.tab.id,
+					{
+						fn: 'on_open_error',
+						error: error,
+						group_id: message.group_id,
+						message_id: message.message_id
+					},
+					{ frameId: sender.frameId }
+				);
 			});
 		break;
 	}

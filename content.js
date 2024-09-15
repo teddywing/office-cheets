@@ -10,7 +10,7 @@ function is_button_injected (attachment_container) {
 	return attachment_container.hasAttribute('office-cheets-open-button-injected');
 }
 
-function inject_attachment_button (attachment_image, space_id, message_id) {
+function inject_attachment_button (attachment_image, group_id, space_id) {
 	// TODO: Check for multiple file uploads in one message.
 	// var attachment_image = message_el.querySelector(
 	// 	'img[src^="https://chat.google.com/u/0/api/get_attachment_url"]'
@@ -27,7 +27,8 @@ function inject_attachment_button (attachment_image, space_id, message_id) {
 
 	var parent_message_el = attachment_container.closest('[data-topic-id]');
 
-	var open_in_docs_button = document.createElement('div');
+	var open_in_docs_button = document.createElement('button');
+	open_in_docs_button.setAttribute('office-cheets-open-button', '');
 	open_in_docs_button.style.position = 'absolute';
 	open_in_docs_button.style.bottom = 0;
 	open_in_docs_button.style.right = 0;
@@ -40,16 +41,33 @@ function inject_attachment_button (attachment_image, space_id, message_id) {
 			chrome.runtime.sendMessage(
 				{
 					fn: 'open_attachment',
+					group_id: group_id,
 					space_id: space_id,
 					message_id: parent_message_el.dataset.topicId,
 				}
 			);
+
+			display_open_in_progress(open_in_docs_button);
 		}
 	);
 
 	attachment_container.appendChild(open_in_docs_button);
 	mark_button_injected(attachment_container);
 	// var file_name = attachment_image.getAttribute('alt');
+}
+
+function display_open_in_progress (open_in_docs_button) {
+	open_in_docs_button.disabled = true;
+
+	// TODO: Add spinner
+}
+
+function display_open_progress_finished (group_id, message_id) {
+	var open_in_docs_button = document.querySelector(
+		`[data-group-id="${group_id}"][data-num-unread-words] [data-topic-id="${message_id}"] button[office-cheets-open-button]`
+	);
+
+	open_in_docs_button.disabled = false;
 }
 
 function initialize_attachment_buttons () {
@@ -70,8 +88,8 @@ function initialize_attachment_buttons () {
 	console.info('initialize_attachment_buttons', 'Chat container', chat_container);
 
 	var chat_parent = document.querySelector('[data-group-id][data-num-unread-words]');
-	var space_name = chat_parent.dataset.groupId;
-	var space_id = space_name.substring(space_name.indexOf('/') + 1);
+	var group_id = chat_parent.dataset.groupId;
+	var space_id = group_id.substring(group_id.indexOf('/') + 1);
 
 	// TODO: Mutation observer.
 	var messages_observer = new MutationObserver(function(mutation_list) {
@@ -90,6 +108,7 @@ function initialize_attachment_buttons () {
 			) {
 				inject_attachment_button(
 					attachment_images[attachment_index],
+					group_id,
 					space_id
 				);
 			}
@@ -129,5 +148,19 @@ function init () {
 
 	initialize_attachment_buttons();
 }
+
+function on_open_finished (message) {
+	display_open_progress_finished(message.group_id, message.message_id);
+}
+
+chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+	console.info('Office Cheets', 'onMessage', message, sender);
+
+	switch (message.fn) {
+	case 'on_open_finished':
+		on_open_finished(message);
+		break;
+	}
+});
 
 init();
