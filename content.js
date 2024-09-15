@@ -148,6 +148,7 @@ function init () {
 	}
 
 	initialize_attachment_buttons();
+	// TODO: Add open button to preview
 }
 
 function on_open_finished (message) {
