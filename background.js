@@ -173,10 +173,27 @@ function fetch_authenticated (resource, options) {
 				);
 			}
 
-			// TODO: If 401 then chrome.identity.removeCachedAuthToken
-
 			options.headers.set('Authorization', 'Bearer ' + token_result.token);
-			return fetch(resource, options);
+			return fetch(resource, options)
+				.then(function(response) {
+					// If we get a 401, it means our token was revoked and we
+					// need to re-request authorisation.
+					if (response.status === 401) {
+						console.info(
+							'fetch_authenticated',
+							'Token revoked 401, removing cached auth token'
+						);
+
+						return chrome.identity.removeCachedAuthToken(
+							{ token: token_result.token }
+						)
+							.then(function() {
+								return fetch_authenticated(resource, options);
+							});
+					}
+
+					return response;
+				});
 		});
 }
 
