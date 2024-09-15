@@ -1,0 +1,29 @@
+button.office-cheets-open-button {
+	position: absolute;
+	bottom: 50px;
+	right: 5px;
+
+	padding: 0.2rem 0.6rem;
+
+	background-color: #eaf1fb;
+
+	border: 1px solid #b4cbeb;
+	border-radius: 1rem;
+
+	font-size: 0.75rem;
+	color: #555;
+}
+
+button.office-cheets-open-button:hover {
+	border-color: #8499b7;
+	color: #151515;
+}
+
+button.office-cheets-open-button:disabled {
+	background-color: #f6f8fb;
+	color: #929292;
+}
+
+.office-cheets-open-button-hide-loader .office-cheets-loader {
+	display: none;
+}

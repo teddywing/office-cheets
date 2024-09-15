@@ -22,9 +22,10 @@ function inject_attachment_button (attachment_image, group_id, space_id) {
 
 	var open_in_docs_button = document.createElement('button');
 	open_in_docs_button.setAttribute('office-cheets-open-button', '');
-	open_in_docs_button.style.position = 'absolute';
-	open_in_docs_button.style.bottom = 0;
-	open_in_docs_button.style.right = 0;
+	open_in_docs_button.setAttribute(
+		'class',
+		'office-cheets-open-button office-cheets-open-button-hide-loader'
+	);
 	open_in_docs_button.textContent = 'Open in Google Docs';
 	open_in_docs_button.addEventListener(
 		'click',
@@ -44,8 +45,14 @@ function inject_attachment_button (attachment_image, group_id, space_id) {
 		}
 	);
 
-	var loader = document.createElement('span');
+	var loader_bounce1 = document.createElement('div');
+	loader_bounce1.setAttribute('class', 'office-cheets-loader-double-bounce1');
+	var loader_bounce2 = document.createElement('div');
+	loader_bounce2.setAttribute('class', 'office-cheets-loader-double-bounce2');
+	var loader = document.createElement('div');
 	loader.setAttribute('class', 'office-cheets-loader');
+	loader.appendChild(loader_bounce1);
+	loader.appendChild(loader_bounce2);
 	open_in_docs_button.appendChild(loader);
 
 	attachment_container.appendChild(open_in_docs_button);
@@ -55,8 +62,7 @@ function inject_attachment_button (attachment_image, group_id, space_id) {
 
 function display_open_in_progress (open_in_docs_button) {
 	open_in_docs_button.disabled = true;
-
-	// TODO: Add spinner
+	open_in_docs_button.classList.remove('office-cheets-open-button-hide-loader');
 }
 
 function display_open_progress_finished (group_id, message_id) {
@@ -65,6 +71,7 @@ function display_open_progress_finished (group_id, message_id) {
 	);
 
 	open_in_docs_button.disabled = false;
+	open_in_docs_button.classList.add('office-cheets-open-button-hide-loader');
 }
 
 function initialize_attachment_buttons () {

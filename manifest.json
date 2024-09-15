@@ -16,7 +16,10 @@
 			],
 			"all_frames": true,
 			"js": ["content.js"],
-			"css": ["loader.css"]
+			"css": [
+				"buttons.css",
+				"loader.css"
+			]
 		}
 	],
 	"background": {
