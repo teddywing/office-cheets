@@ -156,15 +156,20 @@ function cache_get_doc (space_id, message_id) {
 		.then(function(items) {
 			var cache = items['cache'];
 			if (!cache) {
+				console.info('cache_get_doc', 'Cache not initialised');
+
 				return '';
 			}
 
 			for (var i = 0; i < cache.length; i++) {
 				if (cache[i][0] === cache_key) {
+					console.info('cache_get_doc', 'Found Drive ID', cache[i][0], cache[i][1]);
+
 					return cache[i][1];
 				}
 			}
 
+			console.info('cache_get_doc', 'Cache value not found for key', cache_key);
 			return '';
 		});
 }
@@ -174,20 +179,31 @@ function cache_set_doc (space_id, message_id, file_id) {
 		.then(function(items) {
 			var cache = items['cache'];
 			if (!cache) {
+				console.info('cache_set_doc', 'Cache not initialised');
+
 				cache = [];
 			}
 
-			// New items go at the start of the list.
-			cache.unshift(
-				[
-					`${space_id}/${message_id}`,
-					file_id
-				]
-			);
+			var cache_key = `${space_id}/${message_id}`;
+			console.info('cache_set_doc', 'Setting cache', cache_key, file_id);
 
-			// TODO
+			// New items go at the start of the list.
+			cache.unshift([cache_key, file_id]);
+
+			// We only have a limited amount of storage available. To stay
+			// within the limits, remove the oldest files from the cache list.
+			// These are a the end of the list.
+			//
+			// Once the limit is reached, old files must be re-downloaded and
+			// recreated in Google Drive.
 			if (cache.length > CACHE_MAX_ITEMS) {
-				cache.pop();
+				var cache_pair = cache.pop();
+
+				console.info(
+					'cache_set_doc',
+					'Cache at maximum capacity. Removed',
+					cache_pair
+				);
 			}
 
 			return chrome.storage.sync.set({ cache: cache });
