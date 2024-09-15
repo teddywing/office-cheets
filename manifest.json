@@ -4,6 +4,8 @@
 	"version": "0.0.1",
 	"description": "Open Microsoft Office attachments to Google Chat in Google Docs",
 
+	"key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnkb+Q1mXJU+lTn3ze5LzIbsurbLDRtP/I1iq2b6cbS34wtRW68P0r6oVFLShUkCvl9Iri6pGz27qGV6oK7MPr4np+4vHzyxYqSLuUTbwuQ4Wdz9/7BClekHIH1MfTAJSY3DgVbrHlkbMRkJq9Rv58ohm8X+/R1kbktNIfHZAb7LTjExOVPehP7e1kvO1Sl+Z9670QD48+8x/sJ1YAVIojDi+z1DB75pJuCPAnW0vQSmme2xfgGyzuVm5ASimWJgW1HcRkBzhnA5jWKWkRN6mgvsGnavuBIxucVRO/aKRwNZrXveAF/flmrwng5PS2sogHW8x6QjYzJsykt8vsM5YvQIDAQAB",
+
 	"permissions": [
 		"identity",
 		"storage"
