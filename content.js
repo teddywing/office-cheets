@@ -11,15 +11,6 @@ function is_button_injected (attachment_container) {
 }
 
 function inject_attachment_button (attachment_image, group_id, space_id) {
-	// TODO: Check for multiple file uploads in one message.
-	// var attachment_image = message_el.querySelector(
-	// 	'img[src^="https://chat.google.com/u/0/api/get_attachment_url"]'
-	// )
-    //
-	// if (!attachment_image) {
-	// 	return;
-	// }
-
 	// TODO: Don't inject button for non-Office files.
 
 	var attachment_container = attachment_image.parentNode.parentNode;
