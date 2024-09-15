@@ -116,6 +116,7 @@ function initialize_attachment_buttons () {
 	var group_id = chat_parent.dataset.groupId;
 	var space_id = group_id.substring(group_id.indexOf('/') + 1);
 
+	// TODO: Not working when switching chat spaces.
 	var messages_observer = new MutationObserver(function(mutation_list) {
 		for (var i = 0; i < mutation_list.length; i++) {
 			var mutation = mutation_list[i];
