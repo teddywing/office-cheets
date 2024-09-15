@@ -2,6 +2,25 @@ function is_chat_frame () {
 	return window.location.href.includes('hostFrame');
 }
 
+var VALID_FILE_EXTENSIONS = [
+	".doc",
+	".docx",
+	".xls",
+	".xlsx",
+	".ppt",
+	".pptx"
+];
+
+function is_valid_file_name (file_name) {
+	for (var i = 0; i < VALID_FILE_EXTENSIONS.length; i++) {
+		if (file_name.endsWith(VALID_FILE_EXTENSIONS[i])) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 function mark_button_injected (attachment_container) {
 	attachment_container.setAttribute('office-cheets-open-button-injected', '');
 }
@@ -11,7 +30,10 @@ function is_button_injected (attachment_container) {
 }
 
 function inject_attachment_button (attachment_image, group_id, space_id) {
-	// TODO: Don't inject button for non-Office files.
+	var file_name = attachment_image.getAttribute('alt');
+	if (!is_valid_file_name(file_name)) {
+		return;
+	}
 
 	var attachment_container = attachment_image.parentNode.parentNode;
 	if (is_button_injected(attachment_container)) {
@@ -57,7 +79,6 @@ function inject_attachment_button (attachment_image, group_id, space_id) {
 
 	attachment_container.appendChild(open_in_docs_button);
 	mark_button_injected(attachment_container);
-	// var file_name = attachment_image.getAttribute('alt');
 }
 
 function display_open_in_progress (open_in_docs_button) {
