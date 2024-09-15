@@ -95,6 +95,24 @@ function display_open_progress_finished (group_id, message_id) {
 	open_in_docs_button.classList.add('office-cheets-open-button-hide-loader');
 }
 
+function inject_attachment_buttons (container, group_id, space_id) {
+	var attachment_images = container.querySelectorAll(
+		'img[src^="https://chat.google.com/u/0/api/get_attachment_url"]'
+	)
+
+	for (
+		var attachment_index = 0;
+		attachment_index < attachment_images.length;
+		attachment_index++
+	) {
+		inject_attachment_button(
+			attachment_images[attachment_index],
+			group_id,
+			space_id
+		);
+	}
+}
+
 // Timeout initialisation after 30 seconds.
 var INITIALIZE_ATTACHMENT_BUTTONS_TIMEOUT_COUNT = 30;
 
@@ -127,26 +145,11 @@ function initialize_attachment_buttons () {
 	var group_id = chat_parent.dataset.groupId;
 	var space_id = group_id.substring(group_id.indexOf('/') + 1);
 
-	// TODO: Not working when switching chat spaces.
 	var messages_observer = new MutationObserver(function(mutation_list) {
 		for (var i = 0; i < mutation_list.length; i++) {
 			var mutation = mutation_list[i];
 
-			var attachment_images = mutation.target.querySelectorAll(
-				'img[src^="https://chat.google.com/u/0/api/get_attachment_url"]'
-			)
-
-			for (
-				var attachment_index = 0;
-				attachment_index < attachment_images.length;
-				attachment_index++
-			) {
-				inject_attachment_button(
-					attachment_images[attachment_index],
-					group_id,
-					space_id
-				);
-			}
+			inject_attachment_buttons(mutation.target, group_id, space_id);
 
 			// for (var j = 0; j < mutation.addedNodes.length; j++) {
 			// 	var node = mutation.addedNodes[j];
@@ -169,6 +172,12 @@ function initialize_attachment_buttons () {
 			subtree: true
 		}
 	);
+
+	// For some reason the mutation observer doesn't run when selecting a
+	// different chat Space. Inject the buttons outside of the mutation
+	// observer to handle the case where a Space is selected from the UI rather
+	// than on page load.
+	inject_attachment_buttons(chat_container, group_id, space_id);
 
 	// var messages = chat_container.querySelectorAll('[data-topic-id]');
 	// for (var i = 0; i < messages.length; i++) {
