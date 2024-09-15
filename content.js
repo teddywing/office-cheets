@@ -1,5 +1,5 @@
 function is_chat_frame () {
-	return window.location.href.includes('hostFrame');
+	return window.location.href.startsWith('https://chat.google.com/u/0/frame');
 }
 
 var VALID_FILE_EXTENSIONS = [
