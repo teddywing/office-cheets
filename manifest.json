@@ -5,7 +5,8 @@
 	"description": "Open Microsoft Office attachments to Google Chat in Google Docs",
 
 	"permissions": [
-		"identity"
+		"identity",
+		"storage"
 	],
 
 	"content_scripts": [

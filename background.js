@@ -95,9 +95,9 @@ function upload_to_drive (attachment) {
 // Google Docs
 // ===========
 
-function open_file_in_google_docs (drive_upload_response, opener_tab) {
+function open_file_in_google_docs (drive_id, opener_tab) {
 	chrome.tabs.create({
-		url: `https://docs.google.com/spreadsheets/d/${drive_upload_response.id}/edit`,
+		url: `https://docs.google.com/spreadsheets/d/${drive_id}/edit`,
 		windowId: opener_tab.windowId,
 		openerTabId: opener_tab.id,
 		index: opener_tab.index + 1
@@ -135,30 +135,101 @@ function fetch_authenticated (resource, options) {
 }
 
 
+// Cache
+// =====
+
+// chrome.storage.sync items are limited to 8192 bytes. An array tuple of:
+//
+//     ["<space_id>/<message_id>", "<google_drive_file_id>"]
+//
+// has a size of around 64 bytes.
+//
+//     8192 / 65 ~= 126
+//
+// Set the maximum items to 100 to allow for some extra room.
+var CACHE_MAX_ITEMS = 100;
+
+function cache_get_doc (space_id, message_id) {
+	var cache_key = `${space_id}/${message_id}`;
+
+	return chrome.storage.sync.get('cache')
+		.then(function(items) {
+			var cache = items['cache'];
+			if (!cache) {
+				return '';
+			}
+
+			for (var i = 0; i < cache.length; i++) {
+				if (cache[i][0] === cache_key) {
+					return cache[i][1];
+				}
+			}
+
+			return '';
+		});
+}
+
+function cache_set_doc (space_id, message_id, file_id) {
+	return chrome.storage.sync.get('cache')
+		.then(function(items) {
+			var cache = items['cache'];
+			if (!cache) {
+				cache = [];
+			}
+
+			// New items go at the start of the list.
+			cache.unshift(
+				[
+					`${space_id}/${message_id}`,
+					file_id
+				]
+			);
+
+			// TODO
+			if (cache.length > CACHE_MAX_ITEMS) {
+				cache.pop();
+			}
+
+			return chrome.storage.sync.set({ cache: cache });
+		});
+}
+
+
 // Actions
 // =======
 
-function save_attachment_to_drive_and_open (google_chat_name, tab) {
+function save_attachment_to_drive_and_open (space_id, message_id, tab) {
 	// TODO: Handle chat messages with multiple attachments.
 	var attachment_index = 0;
 
-	// TODO: Cache map[google_chat_name][attachment_index][google_drive_id]
+	var google_chat_name = google_chat_name_from_message_id(space_id, message_id);
 
 	return fetch_chat_message(google_chat_name, attachment_index)
 		.then(fetch_attachment)
 		.then(upload_to_drive)
 		.then(function(drive_upload_response) {
-			open_file_in_google_docs(drive_upload_response, tab);
+			cache_set_doc(space_id, message_id, drive_upload_response.id);
+
+			return drive_upload_response;
+		})
+		.then(function(drive_upload_response) {
+			return open_file_in_google_docs(drive_upload_response.id, tab);
 		});
 }
 
 function open_attachment (message, tab) {
-	var google_chat_name = google_chat_name_from_message_id(
-		message.space_id,
-		message.message_id
-	);
+	return cache_get_doc(message.space_id, message.message_id)
+		.then(function(drive_id) {
+			if (!drive_id) {
+				return save_attachment_to_drive_and_open(
+					message.space_id,
+					message.message_id,
+					tab
+				);
+			}
 
-	return save_attachment_to_drive_and_open(google_chat_name, tab);
+			return open_file_in_google_docs(drive_id, tab);
+		});
 }
 
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
