@@ -220,13 +220,13 @@ function fetch_authenticated (resource, options) {
 // Cache
 // =====
 
-// chrome.storage.sync items are limited to 8192 bytes. An array tuple of:
+// chrome.storage.sync items are limited to 8192 bytes. An array triple of:
 //
-//     ["<space_id>/<message_id>", "<google_drive_file_id>"]
+//     ["<space_id>/<message_id>", "<google_drive_file_id>", "<file_type>"]
 //
-// has a size of around 64 bytes.
+// has a size of around 70 bytes.
 //
-//     8192 / 65 ~= 126
+//     8192 / 70 ~= 117
 //
 // Set the maximum items to 100 to allow for some extra room.
 var CACHE_MAX_ITEMS = 100;
