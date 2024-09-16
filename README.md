@@ -8,7 +8,7 @@ Chat only gives you a read-only preview of the spreadsheet. Since the attachment
 isn’t in Google Drive, you aren’t able to open it in the Google editor.
 
 This extension adds a button to Microsoft Word, Microsoft Excel, and Microsoft
-Powerpoint attachments in Google Chat. Clicking the button uploads the
+PowerPoint attachments in Google Chat. Clicking the button uploads the
 attachment to your Google Drive, and opens it in a new tab using Google Docs.
 
 
