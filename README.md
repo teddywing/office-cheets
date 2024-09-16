@@ -38,11 +38,13 @@ the file to your Google Drive and open it using Google’s editor.
 
 1. Clone this repository:
    `git clone https://github.com/teddywing/office-cheets.git`.
-2. In Google Chrome, open `chrome://extensions/`.
-3. Turn on “Developer mode”.
-4. Click the “Load unpacked” button.
-5. Select the cloned “office-cheets” repository folder.
-6. Reload Google Chat to initialise the ‘open attachment’ buttons.
+2. Edit “manifest.json”, replacing the `oauth2.client_id` value with the
+   client ID you created in the GCP setup step #3.
+3. In Google Chrome, open `chrome://extensions/`.
+4. Turn on “Developer mode”.
+5. Click the “Load unpacked” button.
+6. Select the cloned “office-cheets” repository folder.
+7. Reload Google Chat to initialise the ‘open attachment’ buttons.
 
 
 ## License
