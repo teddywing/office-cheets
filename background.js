@@ -190,6 +190,8 @@ function fetch_authenticated (resource, options) {
 					'Authentication error',
 					chrome.runtime.lastError
 				);
+
+				throw new Error(chrome.runtime.lastError);
 			}
 
 			options.headers.set('Authorization', 'Bearer ' + token_result.token);
