@@ -158,7 +158,7 @@ function upload_to_drive (attachment) {
 function open_file_in_google_docs (drive_id, file_type, opener_tab) {
 	var docs_type = file_type_to_docs_path(file_type);
 	if (!docs_type) {
-		throw new Error(`No Docs type for file type '${file_type}' (${drive_id}).`)
+		throw new Error(`No Docs type for file type '${file_type}' (${drive_id}).`);
 	}
 
 	chrome.tabs.create({
