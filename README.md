@@ -13,7 +13,7 @@ attachment to your Google Drive, and opens it in a new tab using Google Docs.
 
 
 ## Usage
-Click the “Open in Google Docs” button on a Google Chat attachment to download
+Click the “Open in Google Docs” button on a Google Chat attachment to upload
 the file to your Google Drive and open it using Google’s editor.
 
 ![Button example](./Screenshot.png)
