@@ -277,7 +277,7 @@ function cache_set_doc (space_id, message_id, file_id, file_type) {
 
 			// We only have a limited amount of storage available. To stay
 			// within the limits, remove the oldest files from the cache list.
-			// These are a the end of the list.
+			// These are at the end of the list.
 			//
 			// Once the limit is reached, old files must be re-downloaded and
 			// recreated in Google Drive.
